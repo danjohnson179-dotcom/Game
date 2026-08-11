@@ -1,160 +1,145 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-  <meta name="theme-color" content="#05070a" />
-  <title>Coaster Control V5 — Iron Comet</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#05070b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Coaster Control V6 — Iron Comet</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="rotateGate" class="rotate-gate">
-    <div class="rotate-phone"></div>
-    <h1>Rotate to landscape</h1>
-    <p>Coaster Control is designed as a full-screen landscape game.</p>
+  <div id="rotateGate">
+    <div class="rotate-card">
+      <div class="rotate-icon">↻</div>
+      <h1>Rotate your iPhone</h1>
+      <p>Coaster Control is designed as a landscape game.</p>
+    </div>
   </div>
 
-  <main id="launcher" class="launcher">
-    <div class="hero-bg"></div>
-    <header class="topbar">
-      <div class="brand"><span class="brand-mark">CC</span><span>COASTER CONTROL</span></div>
+  <main id="app">
+    <div id="webglMount"></div>
+    <div id="weatherFx"></div>
+    <div class="vignette"></div>
+
+    <header class="hud top-hud">
+      <div class="brand">
+        <span class="live-dot"></span>
+        <div>
+          <strong>COASTER CONTROL V6</strong>
+          <small>IRON COMET · PARK OPERATIONS SIM</small>
+        </div>
+      </div>
+
+      <div class="top-metrics">
+        <div><span>SHIFT</span><b id="shiftTime">05:00</b></div>
+        <div><span>QUEUE</span><b id="queueTop">42</b></div>
+        <div><span>THROUGHPUT</span><b id="tphTop">0</b></div>
+        <div><span>SCORE</span><b id="scoreTop">0</b></div>
+      </div>
+
       <div class="top-actions">
-        <button id="aboutBtn" class="ghost-btn">About</button>
-        <button id="soundPreviewBtn" class="ghost-btn">Sound preview</button>
+        <button id="audioBtn">SOUND OFF</button>
+        <button id="musicBtn">MUSIC OFF</button>
       </div>
     </header>
 
-    <section class="hero">
-      <div class="hero-copy">
-        <div class="eyebrow">IRON COMET // NIGHT OPERATIONS</div>
-        <h1>Run the ride.<br/>Own the shift.</h1>
-        <p>A cinematic 3D coaster operations game built for mobile browsers. Load guests, secure the station, dispatch trains, manage the queue and keep the attraction moving.</p>
-        <div class="hero-actions">
-          <button id="playBtn" class="primary-btn">START SHIFT</button>
-          <button id="demoBtn" class="secondary-btn">CAMERA DEMO</button>
-        </div>
-        <div class="feature-grid">
-          <div><b>REAL 3D</b><span>WebGL scene, lights, shadows & cameras</span></div>
-          <div><b>LIVE SIM</b><span>Guests, trains, queue, block states & weather</span></div>
-          <div><b>AUDIO</b><span>Music, ride SFX, station ambience & controls</span></div>
-        </div>
-      </div>
-      <div class="hero-card">
-        <canvas id="heroCanvas"></canvas>
-        <div class="hero-overlay">
-          <span class="live-dot"></span>
-          <span>IRON COMET — PREVIEW FEED</span>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <section id="game" class="game hidden">
-    <div id="webglMount" class="webgl-mount"></div>
-    <div id="weatherFx" class="weather-fx"></div>
-    <div class="scanlines"></div>
-
-    <header class="hud-top">
-      <div class="hud-cluster">
-        <div class="hud-pill"><span>SHIFT</span><b id="shiftTime">05:00</b></div>
-        <div class="hud-pill"><span>QUEUE</span><b id="queueTop">42</b></div>
-        <div class="hud-pill"><span>TPH</span><b id="tphTop">0</b></div>
-      </div>
-      <div class="hud-center">
-        <div id="systemStatus" class="system-status ready"><i></i><span>SYSTEM READY</span></div>
-      </div>
-      <div class="hud-cluster right">
-        <button id="cameraBtn" class="mini-btn">CAM 1</button>
-        <button id="musicBtn" class="mini-btn">MUSIC ON</button>
-        <button id="audioBtn" class="mini-btn">SOUND ON</button>
-        <button id="pauseBtn" class="mini-btn">PAUSE</button>
-      </div>
-    </header>
-
-    <div class="camera-label" id="cameraLabel">PLATFORM CAMERA</div>
-
-    <aside class="left-telemetry panel-glass">
-      <div class="panel-heading">RIDE TELEMETRY</div>
-      <div class="telemetry-row"><span>Train</span><b id="trainState">TRAIN 1 — STATION</b></div>
-      <div class="telemetry-row"><span>Block</span><b id="blockState">CLEAR</b></div>
-      <div class="telemetry-row"><span>Weather</span><b id="weatherState">CLEAR</b></div>
-      <div class="telemetry-row"><span>Reliability</span><b id="reliability">100%</b></div>
-      <div class="telemetry-row"><span>Satisfaction</span><b id="satisfaction">96%</b></div>
+    <aside class="hud left-panel">
+      <div class="panel-title">LIVE OPERATIONS</div>
+      <div class="status-line"><span>Train</span><b id="trainState">TRAIN 1 — STATION</b></div>
+      <div class="status-line"><span>Blocks</span><b id="blockState">0 TRAINS ACTIVE</b></div>
+      <div class="status-line"><span>Guests</span><b id="guestState">0 / 24</b></div>
+      <div class="status-line"><span>Weather</span><b id="weatherState">CLEAR</b></div>
+      <div class="status-line"><span>Reliability</span><b id="reliability">100%</b></div>
+      <div class="status-line"><span>Satisfaction</span><b id="satisfaction">98%</b></div>
       <div class="bar"><i id="satisfactionBar"></i></div>
+
+      <div class="panel-title spaced">CAMERA</div>
+      <div class="camera-grid">
+        <button class="cam active" data-cam="0">STATION</button>
+        <button class="cam" data-cam="1">TRACK</button>
+        <button class="cam" data-cam="2">CHASE</button>
+        <button class="cam" data-cam="3">AERIAL</button>
+      </div>
     </aside>
 
-    <aside class="right-mission panel-glass">
-      <div class="panel-heading">SHIFT OBJECTIVE</div>
-      <div class="objective-big" id="nextTarget">Load guests</div>
+    <aside class="hud right-panel">
+      <div class="panel-title">MISSION</div>
+      <h2 id="nextTarget">Load guests</h2>
       <p id="missionText">Fill the train, secure the platform and dispatch efficiently.</p>
-      <div class="score-row"><span>SCORE</span><b id="scoreTop">0</b></div>
-    </aside>
 
-    <section class="control-deck">
-      <div class="deck-panel queue-panel">
-        <div class="deck-title">STATION / QUEUE</div>
-        <div class="station-metrics">
-          <div><span>WAITING</span><b id="queueNum">42</b></div>
-          <div><span>SEATED</span><b id="guestState">0 / 24</b></div>
-          <div><span>SERVED</span><b id="served">0</b></div>
-        </div>
+      <div class="queue-wrap">
+        <div class="queue-head"><span>QUEUE PRESSURE</span><b id="queueNum">42</b></div>
         <div class="queue-track"><i id="queueFill"></i></div>
         <div id="guestStrip" class="guest-strip"></div>
       </div>
 
-      <div class="deck-panel controls-panel">
-        <div class="deck-title">OPERATOR CONSOLE</div>
-        <div class="controls-grid">
-          <button id="entryBtn" class="control-btn"><i></i><b>ENTRY GATES</b><span>OPEN / CLOSE</span></button>
-          <button id="exitBtn" class="control-btn"><i></i><b>EXIT GATES</b><span>OPEN / CLOSE</span></button>
-          <button id="restraintsBtn" class="control-btn"><i></i><b>RESTRAINTS</b><span>LOCK / RELEASE</span></button>
-          <button id="checkBtn" class="control-btn"><i></i><b>PLATFORM CHECK</b><span>VERIFY</span></button>
-          <button id="holdBtn" class="control-btn"><i></i><b>RIDE HOLD</b><span>APPLY / RELEASE</span></button>
-          <button id="dispatchBtn" class="control-btn dispatch" disabled><i></i><b>DISPATCH</b><span id="dispatchHint">SEQUENCE INCOMPLETE</span></button>
-          <button id="estopBtn" class="control-btn estop"><i></i><b>E-STOP</b><span>SIMULATION STOP</span></button>
-        </div>
+      <div class="panel-title spaced">EVENT LOG</div>
+      <div id="eventLog" class="event-log"></div>
+    </aside>
+
+    <div id="systemStatus" class="system-status ready">
+      <i></i><span>SYSTEM READY</span>
+    </div>
+
+    <footer class="hud console">
+      <div class="control">
+        <span>ENTRY GATES</span>
+        <button id="entryBtn" class="industrial">OPEN</button>
+      </div>
+      <div class="control">
+        <span>EXIT GATES</span>
+        <button id="exitBtn" class="industrial">OPEN</button>
+      </div>
+      <div class="control">
+        <span>RESTRAINTS</span>
+        <button id="restraintsBtn" class="industrial amber">LOCK</button>
+      </div>
+      <div class="control">
+        <span>PLATFORM CHECK</span>
+        <button id="checkBtn" class="industrial">CHECK</button>
+      </div>
+      <div class="control">
+        <span>RIDE HOLD</span>
+        <button id="holdBtn" class="industrial amber">HOLD</button>
       </div>
 
-      <div class="deck-panel event-panel">
-        <div class="deck-title">EVENT LOG</div>
-        <div id="eventLog" class="event-log"></div>
+      <button id="dispatchBtn" class="dispatch" disabled>
+        <small id="dispatchHint">SEQUENCE INCOMPLETE</small>
+        <strong>DISPATCH</strong>
+      </button>
+
+      <button id="estopBtn" class="estop">E‑STOP</button>
+    </footer>
+
+    <section id="startScreen" class="screen">
+      <canvas id="heroCanvas"></canvas>
+      <div class="screen-shade"></div>
+      <div class="launch-card">
+        <div class="eyebrow">3D THEME PARK OPERATIONS GAME</div>
+        <h1>IRON COMET</h1>
+        <p>Operate the station, load guests, keep the ride moving and protect throughput while a fully animated coaster runs around you.</p>
+        <button id="startBtn" class="primary">START SHIFT</button>
+        <button id="startSoundBtn" class="secondary">START WITH SOUND</button>
+        <small>Fictionalised controls. Built for landscape Safari/Chrome.</small>
       </div>
     </section>
-  </section>
 
-  <div id="startModal" class="modal hidden">
-    <div class="modal-card">
-      <div class="eyebrow">SHIFT SETUP</div>
-      <h2>Iron Comet</h2>
-      <p>Choose your operating intensity. Audio begins after you tap Start because iPhone browsers require a user gesture.</p>
-      <div class="difficulty-row">
-        <button class="diff-btn active" data-difficulty="trainee"><b>Trainee</b><span>Calmer queue, fewer events</span></button>
-        <button class="diff-btn" data-difficulty="operator"><b>Operator</b><span>Balanced realistic challenge</span></button>
-        <button class="diff-btn" data-difficulty="chaos"><b>Peak Night</b><span>Heavy queue and rapid events</span></button>
+    <section id="endModal" class="screen hidden">
+      <div class="result-card">
+        <div class="eyebrow">SHIFT COMPLETE</div>
+        <h1 id="endTitle">Grade A</h1>
+        <p id="endText"></p>
+        <div class="result-grid">
+          <div><span>Guests served</span><b id="endGuests">0</b></div>
+          <div><span>Score</span><b id="endScore">0</b></div>
+          <div><span>Best dispatch</span><b id="endDispatch">--</b></div>
+        </div>
+        <button id="restartBtn" class="primary">PLAY AGAIN</button>
       </div>
-      <div class="modal-actions">
-        <button id="closeStartBtn" class="secondary-btn">Back</button>
-        <button id="beginShiftBtn" class="primary-btn">BEGIN SHIFT</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="endModal" class="modal hidden">
-    <div class="modal-card end-card">
-      <div class="eyebrow">SHIFT COMPLETE</div>
-      <h2 id="endTitle">Grade A</h2>
-      <p id="endText"></p>
-      <div class="end-stats">
-        <div><span>Guests served</span><b id="endGuests">0</b></div>
-        <div><span>Score</span><b id="endScore">0</b></div>
-        <div><span>Best dispatch</span><b id="endDispatch">--</b></div>
-      </div>
-      <div class="modal-actions">
-        <button id="homeBtn" class="secondary-btn">Main menu</button>
-        <button id="replayBtn" class="primary-btn">PLAY AGAIN</button>
-      </div>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script type="module" src="game.js"></script>
 </body>
