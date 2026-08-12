@@ -1,133 +1,152 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#05080c">
-  <title>Coaster Control V7.1</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#05080c">
+<title>Coaster Control V8</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="rotate"><div><div class="rot">↻</div><h2>Rotate to landscape</h2><p>Operator mode requires landscape.</p></div></div>
+<div id="rotate"><div><div class="rot">↻</div><h2>Rotate to landscape</h2><p>Operator mode requires landscape.</p></div></div>
 
-  <div id="boot">
-    <div class="bootCard">
-      <div class="eyebrow">COASTER CONTROL V7.1</div>
-      <h1>IRON COMET</h1>
-      <p id="bootText">Loading operator simulator…</p>
-      <button id="retry" hidden>RETRY</button>
-    </div>
+<div id="boot">
+  <div class="bootCard">
+    <div class="eyebrow">COASTER CONTROL V8</div>
+    <h1>IRON COMET</h1>
+    <p id="bootText">Loading manual block simulator…</p>
+    <button id="retry" hidden>RETRY</button>
   </div>
+</div>
 
-  <main id="game" class="hidden">
-    <div id="scene"></div>
-    <div class="vignette"></div>
+<main id="game" class="hidden">
+  <div id="scene"></div>
+  <div class="vignette"></div>
 
-    <header class="top glass">
-      <div class="brand"><i></i><div><b>IRON COMET</b><small>OPERATOR SIMULATOR · V7.1</small></div></div>
-      <div class="metric"><span>SHIFT</span><b id="time">05:00</b></div>
-      <div class="metric"><span>QUEUE</span><b id="queue">44</b></div>
-      <div class="metric"><span>TPH</span><b id="tph">0</b></div>
-      <div class="metric"><span>SCORE</span><b id="score">0</b></div>
-      <button id="pause" class="mini">PAUSE</button>
-    </header>
+  <header class="top glass">
+    <div class="brand"><i></i><div><b>IRON COMET</b><small>MANUAL BLOCK OPS · V8</small></div></div>
+    <div class="metric"><span>SHIFT</span><b id="time">05:00</b></div>
+    <div class="metric"><span>QUEUE</span><b id="queue">48</b></div>
+    <div class="metric"><span>TPH</span><b id="tph">0</b></div>
+    <div class="metric"><span>SCORE</span><b id="score">0</b></div>
+    <button id="pause" class="mini">PAUSE</button>
+  </header>
 
-    <section class="blockbar glass">
-      <div class="blockTitle">BLOCK SYSTEM</div>
-      <div class="block" data-block="STATION"><span>STATION</span><b id="bStation">T1</b></div>
-      <div class="arrow">›</div>
-      <div class="block" data-block="LIFT"><span>LIFT</span><b id="bLift">—</b></div>
-      <div class="arrow">›</div>
-      <div class="block" data-block="MID"><span>MID COURSE</span><b id="bMid">T2</b></div>
-      <div class="arrow">›</div>
-      <div class="block" data-block="FINAL"><span>FINAL BRAKE</span><b id="bFinal">T3</b></div>
-    </section>
+  <section class="blockbar glass">
+    <div class="blockTitle">MANUAL BLOCK CONTROL</div>
 
-    <aside class="camera glass">
-      <div class="panelTitle">CAMERAS</div>
-      <button class="cam active" data-cam="0">OPERATOR</button>
-      <button class="cam" data-cam="1">STATION</button>
-      <button class="cam" data-cam="2">TRACK</button>
-      <button class="cam" data-cam="3">CHASE</button>
-      <button class="cam" data-cam="4">AERIAL</button>
-    </aside>
+    <div class="block occupied" id="blkStation">
+      <span>STATION</span><b id="bStation">T1</b>
+      <button id="enableStation" class="blockEnable on">ENABLED</button>
+    </div>
+    <div class="arrow">›</div>
 
-    <aside class="info glass">
-      <div class="panelTitle">STATION STATUS</div>
-      <div class="line"><span>Train</span><b id="trainLabel">TRAIN 1</b></div>
-      <div class="line"><span>Load</span><b id="loadLabel">0 / 24</b></div>
-      <div class="line"><span>Entry gates</span><b id="entryLabel">CLOSED</b></div>
-      <div class="line"><span>Exit gates</span><b id="exitLabel">CLOSED</b></div>
-      <div class="line"><span>Restraints</span><b id="restraintLabel">OPEN</b></div>
-      <div class="line"><span>Platform</span><b id="checkLabel">NOT CHECKED</b></div>
+    <div class="block occupied" id="blkLift">
+      <span>LIFT</span><b id="bLift">T2</b>
+      <button id="enableLift" class="blockEnable">LOCKED</button>
+    </div>
+    <div class="arrow">›</div>
 
-      <div class="panelTitle gap">NEXT ACTION</div>
-      <h2 id="objective">Open entry gates</h2>
-      <p id="objectiveText">Load waiting guests into the train.</p>
-    </aside>
+    <div class="block occupied" id="blkMid">
+      <span>MID COURSE</span><b id="bMid">T3</b>
+      <button id="enableMid" class="blockEnable">LOCKED</button>
+    </div>
+    <div class="arrow">›</div>
 
-    <div id="lamp" class="lamp"><i></i><span>SYSTEM READY</span></div>
+    <div class="block clear" id="blkFinal">
+      <span>FINAL BRAKE</span><b id="bFinal">—</b>
+      <button id="enableFinal" class="blockEnable">LOCKED</button>
+    </div>
+  </section>
 
-    <section class="event glass">
-      <div class="panelTitle">EVENT LOG</div>
-      <div id="log"></div>
-    </section>
+  <aside class="camera glass">
+    <div class="panelTitle">CAMERAS</div>
+    <button class="cam active" data-cam="0">OPERATOR</button>
+    <button class="cam" data-cam="1">STATION</button>
+    <button class="cam" data-cam="2">LIFT</button>
+    <button class="cam" data-cam="3">TRACK</button>
+    <button class="cam" data-cam="4">CHASE</button>
+    <button class="cam" data-cam="5">AERIAL</button>
+  </aside>
 
-    <footer class="console glass">
-      <div class="control">
-        <span>ENTRY GATES</span>
-        <button id="entryBtn" class="switch">OPEN</button>
-      </div>
-      <div class="control">
-        <span>EXIT GATES</span>
-        <button id="exitBtn" class="switch">OPEN</button>
-      </div>
-      <div class="control">
-        <span>RESTRAINTS</span>
-        <button id="restraintBtn" class="switch amber">LOCK</button>
-      </div>
-      <div class="control">
-        <span>PLATFORM</span>
-        <button id="checkBtn" class="switch">CHECK</button>
-      </div>
-      <div class="control">
-        <span>RIDE HOLD</span>
-        <button id="holdBtn" class="switch amber">HOLD</button>
-      </div>
+  <aside class="info glass">
+    <div class="panelTitle">SELECTED TRAIN</div>
+    <div class="trainTabs">
+      <button class="trainTab active" data-train="0">T1</button>
+      <button class="trainTab" data-train="1">T2</button>
+      <button class="trainTab" data-train="2">T3</button>
+    </div>
 
-      <div class="dispatchBox">
-        <span>DISPATCH ENABLE</span>
-        <div class="dual">
-          <button id="dispatchA" disabled>LEFT</button>
-          <button id="dispatchB" disabled>RIGHT</button>
-        </div>
-      </div>
+    <div class="line"><span>Location</span><b id="trainLocation">STATION</b></div>
+    <div class="line"><span>Status</span><b id="trainStatus">STOPPED</b></div>
+    <div class="line"><span>Load</span><b id="loadLabel">0 / 24</b></div>
+    <div class="line"><span>Restraints</span><b id="restraintLabel">OPEN</b></div>
 
-      <button id="estop" class="estop">E‑STOP</button>
-    </footer>
+    <div class="panelTitle gap">NEXT ACTION</div>
+    <h2 id="objective">Load Train 1</h2>
+    <p id="objectiveText">Open the station entry gates and fill the train.</p>
+  </aside>
 
-    <section id="intro" class="overlay">
-      <div class="introCard">
-        <div class="eyebrow">ROLLER COASTER OPERATOR SIMULATOR</div>
-        <h1>IRON COMET</h1>
-        <p>Run the station, manage train spacing and keep three trains moving through the block system.</p>
-        <button id="play">START SHIFT</button>
-        <small>Fictional simulator inspired by the genre, not a real ride procedure.</small>
-      </div>
-    </section>
+  <section class="event glass">
+    <div class="panelTitle">EVENT LOG</div>
+    <div id="log"></div>
+  </section>
 
-    <section id="finish" class="overlay hidden">
-      <div class="introCard">
-        <div class="eyebrow">SHIFT COMPLETE</div>
-        <h1 id="grade">GRADE A</h1>
-        <p id="result"></p>
-        <button id="again">PLAY AGAIN</button>
-      </div>
-    </section>
-  </main>
+  <div id="lamp" class="lamp"><i></i><span>SYSTEM READY</span></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="game.js?v=71"></script>
+  <footer class="console glass">
+    <div class="control">
+      <span>ENTRY GATES</span>
+      <button id="entryBtn" class="switch">OPEN</button>
+    </div>
+    <div class="control">
+      <span>EXIT GATES</span>
+      <button id="exitBtn" class="switch">OPEN</button>
+    </div>
+    <div class="control">
+      <span>RESTRAINTS</span>
+      <button id="restraintBtn" class="switch amber">LOCK</button>
+    </div>
+    <div class="control">
+      <span>PLATFORM</span>
+      <button id="checkBtn" class="switch">CHECK</button>
+    </div>
+
+    <div class="dispatchBox">
+      <span>SELECTED TRAIN DISPATCH</span>
+      <button id="moveBtn" class="move" disabled><small>BLOCKED</small><strong>DISPATCH T1</strong></button>
+    </div>
+
+    <div class="control">
+      <span>RIDE HOLD</span>
+      <button id="holdBtn" class="switch amber">HOLD</button>
+    </div>
+
+    <button id="estop" class="estop">E‑STOP</button>
+  </footer>
+
+  <section id="intro" class="overlay">
+    <div class="introCard">
+      <div class="eyebrow">ROLLER COASTER OPERATOR SIMULATOR</div>
+      <h1>IRON COMET</h1>
+      <p>Three trains are stacked across the block system. Enable blocks, load the station train and manually dispatch every train one block at a time.</p>
+      <button id="play">START SHIFT</button>
+      <small>Fictional simulator logic for entertainment only.</small>
+    </div>
+  </section>
+
+  <section id="finish" class="overlay hidden">
+    <div class="introCard">
+      <div class="eyebrow">SHIFT COMPLETE</div>
+      <h1 id="grade">GRADE A</h1>
+      <p id="result"></p>
+      <button id="again">PLAY AGAIN</button>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="game.js?v=80"></script>
 </body>
 </html>
