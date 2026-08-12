@@ -1,10 +1,14 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.183.1/build/three.module.js';
-import { AudioSystem } from './audio.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 const $ = id => document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rand=(a,b)=>a+Math.random()*(b-a);
-const audio=new AudioSystem();
+const audio={
+  init: async()=>{},
+  enableMusic: async()=>{},
+  disableMusic: ()=>{},
+  play: ()=>{}
+};
 
 const state={
   running:false,shiftLength:300,shiftRemaining:300,queue:42,seated:0,capacity:24,
@@ -19,17 +23,26 @@ const CAMERA_MODES=['STATION','TRACK','CHASE','AERIAL'];
 let renderer,scene,camera,clock,trackCurve,trainGroups=[],trainStates=[],stationGuests=[];
 let rainPoints,sunLight,hemiLight,heroCtx;
 
-initScene();
-initUI();
-initHeroCanvas();
-animateHero();
-updateUI();
-log('Operator console online.','good');
+let booted=false;
+
+export async function startGame(){
+  if(booted){
+    state.running=true;
+    return;
+  }
+  booted=true;
+  initScene();
+  initUI();
+  state.running=true;
+  updateUI();
+  log('Shift started. Iron Comet open.','good');
+}
 
 function initScene(){
   const mount=$('webglMount');
+  mount.innerHTML='';
   renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
   renderer.setSize(mount.clientWidth,mount.clientHeight,false);
   renderer.shadowMap.enabled=true;
   renderer.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -210,12 +223,6 @@ function initUI(){
     state.cameraIndex=Number(btn.dataset.cam);
     document.querySelectorAll('.cam').forEach(b=>b.classList.toggle('active',b===btn));
   });
-}
-
-async function startShift(withSound){
-  $('startScreen').classList.add('hidden');state.running=true;
-  if(withSound){await audio.init();await audio.enableMusic();state.soundOn=true;state.musicOn=true}
-  log('Shift started. Iron Comet open.','good');updateUI();
 }
 
 function gameLoop(){
