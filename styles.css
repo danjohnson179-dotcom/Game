@@ -42,3 +42,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 @media (max-height:500px){
   .top-hud{height:54px}.left-panel,.right-panel{top:70px}.left-panel{width:175px}.right-panel{width:205px}.console{height:80px}.system-status{bottom:93px}.launch-card h1{font-size:40px}.event-log{max-height:80px}
 }
+
+.build-tag{display:inline-flex;align-items:center;border:1px solid rgba(114,230,255,.28);background:rgba(114,230,255,.08);border-radius:9px;padding:8px 9px;font-size:8px;font-weight:900;letter-spacing:.12em;color:#9feaff}
+.boot-message{margin:8px 0 2px;font-size:10px;color:#93a1b4;min-height:14px}
+.boot-message.error{color:#ff8c93}
+.primary:disabled{opacity:.65;filter:saturate(.5)}
