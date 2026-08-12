@@ -40,8 +40,7 @@
       </div>
 
       <div class="top-actions">
-        <button id="audioBtn">SOUND OFF</button>
-        <button id="musicBtn">MUSIC OFF</button>
+        <span class="build-tag">V6.1 FIXED</span>
       </div>
     </header>
 
@@ -120,8 +119,8 @@
         <div class="eyebrow">3D THEME PARK OPERATIONS GAME</div>
         <h1>IRON COMET</h1>
         <p>Operate the station, load guests, keep the ride moving and protect throughput while a fully animated coaster runs around you.</p>
-        <button id="startBtn" class="primary">START SHIFT</button>
-        <button id="startSoundBtn" class="secondary">START WITH SOUND</button>
+        <button id="startBtn" class="primary" type="button">START SHIFT</button>
+        <div id="bootMessage" class="boot-message">Ready to launch</div>
         <small>Fictionalised controls. Built for landscape Safari/Chrome.</small>
       </div>
     </section>
@@ -141,6 +140,31 @@
     </section>
   </main>
 
-  <script type="module" src="game.js"></script>
+  <script>
+    // Critical launcher deliberately lives outside the 3D module.
+    // This means the PLAY button still responds even if WebGL/CDN startup fails.
+    const startButton = document.getElementById('startBtn');
+    const startScreen = document.getElementById('startScreen');
+    const bootMessage = document.getElementById('bootMessage');
+
+    startButton.addEventListener('click', async () => {
+      if (startButton.disabled) return;
+      startButton.disabled = true;
+      startButton.textContent = 'LOADING 3D...';
+      bootMessage.textContent = 'Starting WebGL engine';
+
+      try {
+        const game = await import('./game.js?v=61');
+        await game.startGame();
+        startScreen.classList.add('hidden');
+      } catch (error) {
+        console.error(error);
+        startButton.disabled = false;
+        startButton.textContent = 'TRY AGAIN';
+        bootMessage.textContent = 'Could not start 3D. Check internet connection and refresh.';
+        bootMessage.classList.add('error');
+      }
+    });
+  </script>
 </body>
 </html>
