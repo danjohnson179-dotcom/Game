@@ -3,168 +3,107 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <meta name="theme-color" content="#05070b">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Coaster Control V6 — Iron Comet</title>
+  <meta name="theme-color" content="#05070a">
+  <title>Coaster Control V6.2</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="rotateGate">
-    <div class="rotate-card">
-      <div class="rotate-icon">↻</div>
-      <h1>Rotate your iPhone</h1>
-      <p>Coaster Control is designed as a landscape game.</p>
+  <div id="rotate">
+    <div><div class="rotateIcon">↻</div><h2>Rotate to landscape</h2><p>This game is built for landscape play.</p></div>
+  </div>
+
+  <div id="boot">
+    <div class="bootCard">
+      <div class="tiny">COASTER CONTROL V6.2</div>
+      <h1>IRON COMET</h1>
+      <p id="bootText">Loading 3D engine…</p>
+      <button id="retryBtn" hidden>RETRY</button>
     </div>
   </div>
 
-  <main id="app">
-    <div id="webglMount"></div>
-    <div id="weatherFx"></div>
-    <div class="vignette"></div>
+  <main id="game" class="hidden">
+    <div id="scene"></div>
+    <div class="shade"></div>
 
-    <header class="hud top-hud">
+    <header class="topbar glass">
       <div class="brand">
-        <span class="live-dot"></span>
-        <div>
-          <strong>COASTER CONTROL V6</strong>
-          <small>IRON COMET · PARK OPERATIONS SIM</small>
-        </div>
+        <span class="liveDot"></span>
+        <div><b>IRON COMET</b><small>COASTER CONTROL V6.2</small></div>
       </div>
-
-      <div class="top-metrics">
-        <div><span>SHIFT</span><b id="shiftTime">05:00</b></div>
-        <div><span>QUEUE</span><b id="queueTop">42</b></div>
-        <div><span>THROUGHPUT</span><b id="tphTop">0</b></div>
-        <div><span>SCORE</span><b id="scoreTop">0</b></div>
+      <div class="metrics">
+        <div><span>TIME</span><b id="time">05:00</b></div>
+        <div><span>QUEUE</span><b id="queue">36</b></div>
+        <div><span>TPH</span><b id="tph">0</b></div>
+        <div><span>SCORE</span><b id="score">0</b></div>
       </div>
-
-      <div class="top-actions">
-        <span class="build-tag">V6.1 FIXED</span>
-      </div>
+      <button id="pauseBtn" class="mini">PAUSE</button>
     </header>
 
-    <aside class="hud left-panel">
-      <div class="panel-title">LIVE OPERATIONS</div>
-      <div class="status-line"><span>Train</span><b id="trainState">TRAIN 1 — STATION</b></div>
-      <div class="status-line"><span>Blocks</span><b id="blockState">0 TRAINS ACTIVE</b></div>
-      <div class="status-line"><span>Guests</span><b id="guestState">0 / 24</b></div>
-      <div class="status-line"><span>Weather</span><b id="weatherState">CLEAR</b></div>
-      <div class="status-line"><span>Reliability</span><b id="reliability">100%</b></div>
-      <div class="status-line"><span>Satisfaction</span><b id="satisfaction">98%</b></div>
-      <div class="bar"><i id="satisfactionBar"></i></div>
+    <aside class="left glass">
+      <div class="panelTitle">OPERATIONS</div>
+      <div class="row"><span>Station</span><b id="stationLabel">TRAIN 1</b></div>
+      <div class="row"><span>Guests</span><b id="guestsLabel">0 / 24</b></div>
+      <div class="row"><span>Restraints</span><b id="restraintLabel">OPEN</b></div>
+      <div class="row"><span>Platform</span><b id="platformLabel">UNCHECKED</b></div>
+      <div class="row"><span>Weather</span><b id="weatherLabel">CLEAR</b></div>
 
-      <div class="panel-title spaced">CAMERA</div>
-      <div class="camera-grid">
-        <button class="cam active" data-cam="0">STATION</button>
-        <button class="cam" data-cam="1">TRACK</button>
-        <button class="cam" data-cam="2">CHASE</button>
-        <button class="cam" data-cam="3">AERIAL</button>
+      <div class="panelTitle gap">CAMERA</div>
+      <div class="cams">
+        <button data-cam="0" class="cam active">STATION</button>
+        <button data-cam="1" class="cam">TRACK</button>
+        <button data-cam="2" class="cam">CHASE</button>
+        <button data-cam="3" class="cam">AERIAL</button>
       </div>
     </aside>
 
-    <aside class="hud right-panel">
-      <div class="panel-title">MISSION</div>
-      <h2 id="nextTarget">Load guests</h2>
-      <p id="missionText">Fill the train, secure the platform and dispatch efficiently.</p>
+    <aside class="right glass">
+      <div class="panelTitle">OBJECTIVE</div>
+      <h2 id="objective">Load the train</h2>
+      <p id="objectiveText">Open entry gates and board guests.</p>
 
-      <div class="queue-wrap">
-        <div class="queue-head"><span>QUEUE PRESSURE</span><b id="queueNum">42</b></div>
-        <div class="queue-track"><i id="queueFill"></i></div>
-        <div id="guestStrip" class="guest-strip"></div>
-      </div>
+      <div class="panelTitle gap">QUEUE</div>
+      <div class="queueBar"><i id="queueFill"></i></div>
+      <div id="queueDots" class="queueDots"></div>
 
-      <div class="panel-title spaced">EVENT LOG</div>
-      <div id="eventLog" class="event-log"></div>
+      <div class="panelTitle gap">EVENTS</div>
+      <div id="log" class="log"></div>
     </aside>
 
-    <div id="systemStatus" class="system-status ready">
-      <i></i><span>SYSTEM READY</span>
-    </div>
+    <div id="readyLamp" class="readyLamp"><i></i><span>SYSTEM READY</span></div>
 
-    <footer class="hud console">
-      <div class="control">
-        <span>ENTRY GATES</span>
-        <button id="entryBtn" class="industrial">OPEN</button>
-      </div>
-      <div class="control">
-        <span>EXIT GATES</span>
-        <button id="exitBtn" class="industrial">OPEN</button>
-      </div>
-      <div class="control">
-        <span>RESTRAINTS</span>
-        <button id="restraintsBtn" class="industrial amber">LOCK</button>
-      </div>
-      <div class="control">
-        <span>PLATFORM CHECK</span>
-        <button id="checkBtn" class="industrial">CHECK</button>
-      </div>
-      <div class="control">
-        <span>RIDE HOLD</span>
-        <button id="holdBtn" class="industrial amber">HOLD</button>
-      </div>
-
-      <button id="dispatchBtn" class="dispatch" disabled>
-        <small id="dispatchHint">SEQUENCE INCOMPLETE</small>
-        <strong>DISPATCH</strong>
-      </button>
-
+    <footer class="console glass">
+      <div class="ctrl"><span>ENTRY</span><button id="entryBtn">OPEN</button></div>
+      <div class="ctrl"><span>EXIT</span><button id="exitBtn">OPEN</button></div>
+      <div class="ctrl"><span>RESTRAINTS</span><button id="restraintBtn">LOCK</button></div>
+      <div class="ctrl"><span>PLATFORM</span><button id="checkBtn">CHECK</button></div>
+      <div class="ctrl"><span>HOLD</span><button id="holdBtn">HOLD</button></div>
+      <button id="dispatchBtn" class="dispatch" disabled><small>BLOCKED</small><strong>DISPATCH</strong></button>
       <button id="estopBtn" class="estop">E‑STOP</button>
     </footer>
 
-    <section id="startScreen" class="screen">
-      <canvas id="heroCanvas"></canvas>
-      <div class="screen-shade"></div>
-      <div class="launch-card">
-        <div class="eyebrow">3D THEME PARK OPERATIONS GAME</div>
+    <section id="intro" class="overlay">
+      <div class="introCard">
+        <div class="tiny">3D PARK OPERATIONS GAME</div>
         <h1>IRON COMET</h1>
-        <p>Operate the station, load guests, keep the ride moving and protect throughput while a fully animated coaster runs around you.</p>
-        <button id="startBtn" class="primary" type="button">START SHIFT</button>
-        <div id="bootMessage" class="boot-message">Ready to launch</div>
-        <small>Fictionalised controls. Built for landscape Safari/Chrome.</small>
+        <p>Run a five-minute shift. Load trains, secure the station and keep three coaster trains circulating.</p>
+        <button id="playBtn">START SHIFT</button>
+        <small>Fictional ride controls for entertainment.</small>
       </div>
     </section>
 
-    <section id="endModal" class="screen hidden">
-      <div class="result-card">
-        <div class="eyebrow">SHIFT COMPLETE</div>
-        <h1 id="endTitle">Grade A</h1>
-        <p id="endText"></p>
-        <div class="result-grid">
-          <div><span>Guests served</span><b id="endGuests">0</b></div>
-          <div><span>Score</span><b id="endScore">0</b></div>
-          <div><span>Best dispatch</span><b id="endDispatch">--</b></div>
-        </div>
-        <button id="restartBtn" class="primary">PLAY AGAIN</button>
+    <section id="finish" class="overlay hidden">
+      <div class="introCard">
+        <div class="tiny">SHIFT COMPLETE</div>
+        <h1 id="grade">GRADE A</h1>
+        <p id="result"></p>
+        <button id="againBtn">PLAY AGAIN</button>
       </div>
     </section>
   </main>
 
-  <script>
-    // Critical launcher deliberately lives outside the 3D module.
-    // This means the PLAY button still responds even if WebGL/CDN startup fails.
-    const startButton = document.getElementById('startBtn');
-    const startScreen = document.getElementById('startScreen');
-    const bootMessage = document.getElementById('bootMessage');
-
-    startButton.addEventListener('click', async () => {
-      if (startButton.disabled) return;
-      startButton.disabled = true;
-      startButton.textContent = 'LOADING 3D...';
-      bootMessage.textContent = 'Starting WebGL engine';
-
-      try {
-        const game = await import('./game.js?v=61');
-        await game.startGame();
-        startScreen.classList.add('hidden');
-      } catch (error) {
-        console.error(error);
-        startButton.disabled = false;
-        startButton.textContent = 'TRY AGAIN';
-        bootMessage.textContent = 'Could not start 3D. Check internet connection and refresh.';
-        bootMessage.classList.add('error');
-      }
-    });
-  </script>
+  <!-- Classic scripts instead of ES modules: much more reliable on GitHub Pages/iPhone -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
