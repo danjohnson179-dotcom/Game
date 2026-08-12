@@ -1,6 +1,9 @@
 (function(){
 'use strict';
-const $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), rand=(a,b)=>a+Math.random()*(b-a);
+const $=id=>document.getElementById(id),
+      clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),
+      rand=(a,b)=>a+Math.random()*(b-a),
+      on=(id,event,fn)=>{const el=$(id); if(el) el.addEventListener(event,fn); return el;};
 const boot=$('boot'), game=$('game');
 if(!window.THREE){$('bootText').textContent='3D engine failed to load.';$('retry').hidden=false;$('retry').onclick=()=>location.reload();return}
 
@@ -9,7 +12,7 @@ let running=false,paused=false,stationTrain=0,dualA=false,dualB=false;
 
 const S={time:300,queue:44,seated:0,cap:24,served:0,tph:0,score:0,entry:false,exit:false,restraints:false,checked:false,hold:false,estop:false,reliability:100,nextEvent:22};
 
-try{init3D();bindUI();updateUI();boot.classList.add('hidden');game.classList.remove('hidden');log('Operator simulator ready.','good')}
+try{init3D();bindUI();updateUI();boot.classList.add('hidden');game.classList.remove('hidden');log('V7.1 operator simulator ready.','good')}
 catch(e){console.error(e);$('bootText').textContent='Startup failed: '+e.message;$('retry').hidden=false;$('retry').onclick=()=>location.reload()}
 
 function init3D(){
@@ -109,16 +112,18 @@ function buildGuests(){
 }
 
 function bindUI(){
- $('play').onclick=()=>{$('intro').classList.add('hidden');running=true;log('Shift started.','good')};
- $('again').onclick=()=>location.reload();$('pause').onclick=()=>{paused=!paused;$('pause').textContent=paused?'RESUME':'PAUSE'};
- $('entryBtn').onclick=()=>{if(blocked())return reject('Entry gates unavailable.');if(S.exit||S.restraints)return reject('Station interlock prevents entry gates.');S.entry=!S.entry;S.checked=false;log('Entry gates '+(S.entry?'opened.':'closed.'));updateUI()};
- $('exitBtn').onclick=()=>{if(blocked())return reject('Exit gates unavailable.');if(S.entry)return reject('Close entry gates first.');S.exit=!S.exit;S.checked=false;log('Exit gates '+(S.exit?'opened.':'closed.'));updateUI()};
- $('restraintBtn').onclick=()=>{if(blocked())return reject('Restraints unavailable.');if(S.entry||S.exit)return reject('Close station gates first.');if(S.seated<23.5)return reject('Train is not fully loaded.');S.restraints=!S.restraints;S.checked=false;log('Restraints '+(S.restraints?'locked.':'released.'),S.restraints?'good':'');updateUI()};
- $('checkBtn').onclick=()=>{if(blocked())return reject('Check unavailable.');if(S.seated<23.5||!S.restraints||S.entry||S.exit)return reject('Platform not ready.');S.checked=true;log('Platform check complete.','good');updateUI()};
- $('holdBtn').onclick=()=>{if(S.estop)return;S.hold=!S.hold;log('Ride hold '+(S.hold?'applied.':'released.'),S.hold?'bad':'good');updateUI()};
- $('estop').onclick=()=>{S.estop=!S.estop;log(S.estop?'Emergency stop active.':'Emergency stop reset.',S.estop?'bad':'good');updateUI()};
- $('dispatchA').onclick=()=>{dualA=true;checkDual()};$('dispatchB').onclick=()=>{dualB=true;checkDual()};
- document.querySelectorAll('.cam').forEach(b=>b.onclick=()=>{cameraMode=Number(b.dataset.cam);document.querySelectorAll('.cam').forEach(x=>x.classList.toggle('active',x===b))});
+ on('play','click',()=>{const intro=$('intro');if(intro)intro.classList.add('hidden');running=true;log('Shift started.','good')});
+ on('again','click',()=>location.reload());
+ on('pause','click',()=>{paused=!paused;const p=$('pause');if(p)p.textContent=paused?'RESUME':'PAUSE'});
+ on('entryBtn','click',()=>{if(blocked())return reject('Entry gates unavailable.');if(S.exit||S.restraints)return reject('Station interlock prevents entry gates.');S.entry=!S.entry;S.checked=false;log('Entry gates '+(S.entry?'opened.':'closed.'));updateUI()});
+ on('exitBtn','click',()=>{if(blocked())return reject('Exit gates unavailable.');if(S.entry)return reject('Close entry gates first.');S.exit=!S.exit;S.checked=false;log('Exit gates '+(S.exit?'opened.':'closed.'));updateUI()});
+ on('restraintBtn','click',()=>{if(blocked())return reject('Restraints unavailable.');if(S.entry||S.exit)return reject('Close station gates first.');if(S.seated<23.5)return reject('Train is not fully loaded.');S.restraints=!S.restraints;S.checked=false;log('Restraints '+(S.restraints?'locked.':'released.'),S.restraints?'good':'');updateUI()});
+ on('checkBtn','click',()=>{if(blocked())return reject('Check unavailable.');if(S.seated<23.5||!S.restraints||S.entry||S.exit)return reject('Platform not ready.');S.checked=true;log('Platform check complete.','good');updateUI()});
+ on('holdBtn','click',()=>{if(S.estop)return;S.hold=!S.hold;log('Ride hold '+(S.hold?'applied.':'released.'),S.hold?'bad':'good');updateUI()});
+ on('estop','click',()=>{S.estop=!S.estop;log(S.estop?'Emergency stop active.':'Emergency stop reset.',S.estop?'bad':'good');updateUI()});
+ on('dispatchA','click',()=>{dualA=true;checkDual()});
+ on('dispatchB','click',()=>{dualB=true;checkDual()});
+ document.querySelectorAll('.cam').forEach(b=>b.addEventListener('click',()=>{cameraMode=Number(b.dataset.cam);document.querySelectorAll('.cam').forEach(x=>x.classList.toggle('active',x===b))}));
 }
 
 function checkDual(){if(!ready()){dualA=dualB=false;return}if(dualA&&dualB){dispatch();dualA=dualB=false}else setTimeout(()=>{dualA=dualB=false},900)}
@@ -200,7 +205,10 @@ function updateCamera(dt){
 }
 
 function updateUI(){
- $('time').textContent=fmt(S.time);$('queue').textContent=Math.round(S.queue);$('tph').textContent=S.tph;$('score').textContent=Math.max(0,S.score);
+ if($('time'))$('time').textContent=fmt(S.time);
+ if($('queue'))$('queue').textContent=Math.round(S.queue);
+ if($('tph'))$('tph').textContent=S.tph;
+ if($('score'))$('score').textContent=Math.max(0,S.score);
  $('trainLabel').textContent=stationTrain>=0?'TRAIN '+(stationTrain+1):'STATION EMPTY';$('loadLabel').textContent=Math.floor(S.seated)+' / 24';
  $('entryLabel').textContent=S.entry?'OPEN':'CLOSED';$('exitLabel').textContent=S.exit?'OPEN':'CLOSED';$('restraintLabel').textContent=S.restraints?'LOCKED':'OPEN';$('checkLabel').textContent=S.checked?'CHECKED':'NOT CHECKED';
  $('entryBtn').classList.toggle('on',S.entry);$('exitBtn').classList.toggle('on',S.exit);$('restraintBtn').classList.toggle('on',S.restraints);$('checkBtn').classList.toggle('on',S.checked);$('holdBtn').classList.toggle('warn',S.hold);
